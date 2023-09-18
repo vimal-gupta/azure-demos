@@ -16,9 +16,9 @@ jobs:
     
     - name: Build Docker Images
       run: |        
-        docker build -t dhcr:latest -t vimalgupta/dhcr:inventory-${GITHUB_REF_NAME} . -f Inventory.API/Dockerfile
+        docker build -t dhcr:latest -t vimalgupta/dhcr:app-${{secrets.github.sha}} . -f Inventory.API/Dockerfile
     - name: Publish Docker Images
-      run: docker push vimalgupta/dhcr:inventory-${GITHUB_REF_NAME}
+      run: docker push vimalgupta/dhcr:app-${{secrets.github.sha}}
   
     - name: Azure login
       id: login
@@ -50,5 +50,7 @@ jobs:
         namespace: 'default'
         manifests: |
             inventory-deploy.yaml
+        images: |
+            vimalgupta/dhcr/app-${{secrets.github.sha}}    
         imagepullsecrets: |
             docker-secret 
