@@ -40,8 +40,8 @@ jobs:
         namespace: 'default'
         secret-name: 'docker-secret'
         container-registry-url: 'docker.io'
-        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        container-registry-username: ${{ secrets.DOCKER_USER }}
+        container-registry-password: ${{ secrets.DOCKER_PASSWORD }}
       id: create-secret
     - name: Deploy to AKS
       id: deploy-aks
