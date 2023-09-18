@@ -51,7 +51,7 @@ jobs:
         manifests: |
             inventory-deploy.yaml
         images: |
-            'vimalgupta/dhcr/app-${{github.sha}}'    
+            'docker.io/vimalgupta/dhcr/app-${{github.sha}}'    
         imagepullsecrets: |
             docker-secret 
         pull-images: true 
