@@ -1,0 +1,54 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:  
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3        
+    - name: Docker Login
+      run: echo ${{secrets.DOCKER_PASSWORD}} | docker login --password-stdin -u ${{secrets.DOCKER_USER}}
+    
+    - name: Build Docker Images
+      run: |        
+        docker build -t dhcr:latest -t vimalgupta/dhcr:inventory-${GITHUB_REF_NAME} . -f Inventory.API/Dockerfile
+    - name: Publish Docker Images
+      run: docker push vimalgupta/dhcr:inventory-${GITHUB_REF_NAME}
+  
+    - name: Azure login
+      id: login
+      uses: azure/login@v1.4.3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Set AKS context
+      id: set-context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: '${{ secrets.resource_group }}' 
+        cluster-name: '${{ secrets.cluster_name }}'
+    - name: Setup kubectl
+      id: install-kubectl
+      uses: azure/setup-kubectl@v3
+    - name: Set imagePullSecret
+      uses: azure/k8s-create-secret@v4
+      with:
+        namespace: 'default'
+        secret-name: 'docker-secret'
+        container-registry-url: 'docker.io'
+        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+      id: create-secret
+    - name: Deploy to AKS
+      id: deploy-aks
+      uses: Azure/k8s-deploy@v4
+      with:
+        namespace: 'default'
+        manifests: |
+            inventory-deploy.yaml
+        imagepullsecrets: |
+            docker-secret 
