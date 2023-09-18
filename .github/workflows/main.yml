@@ -18,8 +18,9 @@ jobs:
       run: |        
         docker build -t vimalgupta/dhcr:latest -t vimalgupta/dhcr:app-${{github.sha}} . -f Inventory.API/Dockerfile
     - name: Publish Docker Images
-      run: docker push vimalgupta/dhcr:app-${{github.sha}}
-  
+      run: |
+        docker push vimalgupta/dhcr:app-${{github.sha}}
+        docker push vimalgupta/dhcr:latest
     - name: Azure login
       id: login
       uses: azure/login@v1.4.3
@@ -51,7 +52,7 @@ jobs:
         manifests: |
             inventory-deploy.yaml
         images: |
-            'vimalgupta/dhcr:app-${{github.sha}}' 
+            'docker.io/vimalgupta/dhcr:app-${{github.sha}}' 
         imagepullsecrets: |
             docker-secret 
         pull-images: true 
