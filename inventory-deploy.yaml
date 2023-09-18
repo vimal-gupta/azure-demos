@@ -20,7 +20,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
       - name: inventory
-        image: vimalgupta/dhcr/app-
+        image: vimalgupta/dhcr/app:latest
         ports:
         - containerPort: 80
         resources:
